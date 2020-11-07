@@ -1,0 +1,82 @@
+%%%%%%%% ICML 2020 EXAMPLE LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
+
+\documentclass{article}
+
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{booktabs}
+
+% hyperref makes hyperlinks in the resulting PDF.
+% If your build breaks (sometimes temporarily if a hyperlink spans a page)
+% please comment out the following usepackage line and replace
+% \usepackage{icml2020} with \usepackage[nohyperref]{icml2020} above.
+\usepackage{hyperref}
+
+% Attempt to make hyperref and algorithmic work together better:
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+
+% Use the following line for the initial blind version submitted for review:
+\usepackage{icml2020}
+
+% If accepted, instead use the following line for the camera-ready submission:
+%\usepackage[accepted]{icml2020}
+
+% The \icmltitle you define below is probably too long as a header.
+% Therefore, a short form for the running title is supplied here:.
+
+% Informative title – Please create an informative title for your term paper that is relevant to the content of the paper. It can be a longer title (roughly 5-10 words). You can think of it as an abstract of the abstract. It should not be generic like “Course term paper” or “Project paper”.
+
+\newcommand{title}{Twin-Delayed Deep Deterministic Policy Gradient (TD3)}
+\icmltitlerunning{\title}
+
+\begin{document}
+
+\twocolumn[
+
+\icmltitle{\title}
+\icmlsetsymbol{equal}{*}
+
+\begin{icmlauthorlist}
+\icmlauthor{Nicholas B. LaFarge}{equal,pu}
+\end{icmlauthorlist}
+
+\icmlaffiliation{pu}{Department of Aeronautics and Astronautics, Purdue University, West Lafayette, IN, USA}
+\icmlcorrespondingauthor{Nicholas B. LaFarge}{nlafarge@purdue.edu}
+\icmlkeywords{Machine Learning, TD3, RL, ICML}
+\vskip 0.3in
+]
+\printAffiliationsAndNotice{\icmlEqualContribution}
+\newcommand{\note}[1]{{\color{red}\textit{#1}}}
+
+
+\begin{abstract}
+blar
+\end{abstract}
+
+
+
+% Approximately two to three pages of this paper should be a substantive critique of the three (or more) papers that you have read.
+\section{Paper Critique}
+
+
+% Approximately three to four pages of this paper should be a description of your implementation, evaluation and discussion of the method from at least one of the papers.
+\section{Implementation Results}
+
+
+\section{Implementation Goal}
+I have chosen to implement the reinforcement learning scheme suggested by \citep{Fujimoto:2018_TD3} for my final project. This off-policy algorithm, called Twin-Delayed Deep Deterministic Policy Gradient (TD3) is a powerful approach to continuous control tasks. My goal is to implement the algorithm itself (using my own implementation approach), and test in on various toy problems provided through AIGym. Ideally, I would like to apply to the learning framework to MuJoCo robotics tasks. Through these toy problems I hope to get a better sense of hyperparameter tuning, and understand at a higher level the stochasticity of the underlying learning framework. Lastly, I want to see how customizations, such as input standardization, can affect learning performance.
+
+\section{Implementation Plan}
+Many implementations exist online for TD3. I would like to create my own, using two specific implementations as references. In particular, the authors provide a version of their code on Github\footnote{\url{https://github.com/sfujim/TD3}}, as well as a version from OpenAI Spinning Up\footnote{\url{https://github.com/openai/spinningup/}} -- an open source educational tool created by OpenAI. While I will use their code as a reference, I will write my own version of both the learning scheme, and the script for training the algorithm. Having implemented my own version of this algorithm, I will test it on a variety of baseline toy problems. I would like to include some classical control problems, such as the inverted pendulum, as well as robotics problems provided by MuJoCo. By using standard toy problems, I can evaluate my implementation and hyperparameters to baseline results published by both \citep{Fujimoto:2018_TD3} and by OpenAI Spinning Up, to verify my implementation works as intended.
+
+\section{Preliminary Implementation}
+I have implemented my version of TD3, and tested it with some basic problems. In particular, I have used the inverted pendulum problem to assess how well the learning performs. My implementation is based on OpenAI Spinning Up's tensorflow version of TD3, with significant changes in the overall code architecture and runner script. My implementation seems to be performing as intended, but more a more rigorous analysis will be needed to determine the efficacy of my code. For now, I am just using the hyperparamters and network structure suggested by the paper, but longer term I'm hoping to analyze those hyperparameters to see which parameters the algorithm is most sensitive to.
+
+\section{Preliminary Results}
+To demonstrate preliminary results, consider the classical controls problem of the inverted pendulum. The agent is tasks with spinning up and balancing the inverted pendulum. A screenshot from one arbitrary trial is depicted in Figure \ref{fig:pendulum}. At first, the agent is unable to perform this task. However, through training, the agent quickly learns an effective policy, and is able to spin up and balance the pendulum. This learning can be visualized in two ways. First, a running average for future discounted reward over episodes in plotted in Figure \ref{fig:pendulum_reward}. The immediate upward trend shows that the learning algorithm is working (though future work will be needed to analyze how well it works). Next, the loss function values for the actor and critic networks over training are plotted in Figure \ref{fig:pendulum_loss}. These plots show convergence toward zero for the loss functions, indicating both networks are being trained properly.
+
+\bibliography{references}
+\bibliographystyle{icml2020}
+
+\end{document}
