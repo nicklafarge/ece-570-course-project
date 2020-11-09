@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d (TeX Live 2019/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+The style file: icml2020.bst
+Database file #1: references.bib
+Warning--I didn't find a database entry for "Fujimoto:2018_TD3"
+You've used 3 entries,
+            2773 wiz_defined-function locations,
+            612 strings with 5560 characters,
+and the built_in function-call counts, 1732 in all, are:
+= -- 147
+> -- 108
+< -- 2
++ -- 36
+- -- 33
+* -- 141
+:= -- 258
+add.period$ -- 12
+call.type$ -- 3
+change.case$ -- 20
+chr.to.int$ -- 3
+cite$ -- 6
+duplicate$ -- 83
+empty$ -- 140
+format.name$ -- 36
+if$ -- 369
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 3
+newline$ -- 26
+num.names$ -- 12
+pop$ -- 47
+preamble$ -- 1
+purify$ -- 17
+quote$ -- 0
+skip$ -- 65
+stack$ -- 0
+substring$ -- 46
+swap$ -- 18
+text.length$ -- 2
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 33
+warning$ -- 0
+while$ -- 12
+width$ -- 0
+write$ -- 51
+(There was 1 warning)

@@ -1,0 +1,29 @@
+% Encoding: UTF-8
+
+@InProceedings{td3,
+  author    = {Scott Fujimoto and Herke van Hoof and David Meger},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  title     = {Addressing Function Approximation Error in Actor-Critic Methods},
+  year      = {2018},
+  url       = {https://arxiv.org/pdf/1802.09477.pdf},
+}
+
+@InProceedings{sac,
+  author    = {Tuomas Haarnoja and Aurick Zhou and Pieter Abbeel and Sergey Levine},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  title     = {Soft Actor-Critic: Off-Policy Maximum Entropy Deep ReinforcementLearning with a Stochastic Actor},
+  year      = {2018},
+  url       = {https://arxiv.org/pdf/1801.01290.pdf},
+}
+
+@InProceedings{ofir,
+  author    = {Nachum, Ofir and Gu, Shixiang (Shane) and Lee, Honglak and Levine, Sergey},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  title     = {Data-Efficient Hierarchical Reinforcement Learning},
+  year      = {2018},
+  pages     = {3303--3313},
+  volume    = {31},
+  url       = {https://proceedings.neurips.cc/paper/2018/file/e6384711491713d29bc63fc5eeb5ba4f-Paper.pdf},
+}
+
+@Comment{jabref-meta: databaseType:bibtex;}

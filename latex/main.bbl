@@ -1,0 +1,29 @@
+\begin{thebibliography}{3}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Fujimoto et~al.(2018)Fujimoto, van Hoof, and Meger]{td3}
+Fujimoto, S., van Hoof, H., and Meger, D.
+\newblock Addressing function approximation error in actor-critic methods.
+\newblock In \emph{International Conference on Machine Learning (ICML)}, 2018.
+\newblock URL \url{https://arxiv.org/pdf/1802.09477.pdf}.
+
+\bibitem[Haarnoja et~al.(2018)Haarnoja, Zhou, Abbeel, and Levine]{sac}
+Haarnoja, T., Zhou, A., Abbeel, P., and Levine, S.
+\newblock Soft actor-critic: Off-policy maximum entropy deep
+  reinforcementlearning with a stochastic actor.
+\newblock In \emph{International Conference on Machine Learning (ICML)}, 2018.
+\newblock URL \url{https://arxiv.org/pdf/1801.01290.pdf}.
+
+\bibitem[Nachum et~al.(2018)Nachum, Gu, Lee, and Levine]{ofir}
+Nachum, O., Gu, S.~S., Lee, H., and Levine, S.
+\newblock Data-efficient hierarchical reinforcement learning.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, volume~31, pp.\  3303--3313, 2018.
+\newblock URL
+  \url{https://proceedings.neurips.cc/paper/2018/file/e6384711491713d29bc63fc5eeb5ba4f-Paper.pdf}.
+
+\end{thebibliography}

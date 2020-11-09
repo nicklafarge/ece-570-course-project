@@ -13,6 +13,7 @@ def run_learner(env_name,
                 output_freq=10,
                 env_seed=None,
                 tf_seed=None,
+                max_time=100,
                 **kwargs):
     env = gym.make(env_name)
 
@@ -63,7 +64,7 @@ def run_learner(env_name,
             new_state, reward, done, info = env.step(action)
 
             # enforce maximum time for episode
-            # done = done or t == max_time - 1
+            done = done or t == max_time - 1
 
             episode_rewards_sum += reward
 
@@ -82,7 +83,7 @@ def run_learner(env_name,
                           f"loss: {'-' if not agent.updates else np.abs(agent.updates[-1])},     "
                           f"greedy: {deterministic_action}")
 
-                if episode % 100 == 0:
+                if episode > 0 and episode % 100 == 0:
                     avg_reward = np.average(score_list[-100:])
                     print(f"Average reward over 100 episodes: {avg_reward}")
 
@@ -110,21 +111,25 @@ def compute_rolling_average(scores, N):
 def run_agent():
     # env_name = 'CartPole-v1'
     # env_name = 'MountainCarContinuous-v0'
-    env_name = 'Pendulum-v0'
+    # env_name = 'Pendulum-v0'
     # env_name = 'BipedalWalker-v3'
     # env_name = 'LunarLanderContinuous-v2'
+    # env_name = 'HalfCheetah-v2'
+    env_name = 'Humanoid-v2'
 
     agent_class = Td3Agent
 
-    n_greedy_episodes = 1
-    max_episodes = 100
+    n_greedy_episodes = 5
+    max_episodes = 1000
 
     max_time = 200
     output_freq = 10
 
     a_scale = {'Pendulum-v0': 2,
                'BipedalWalker-v3': 1,
-               'LunarLanderContinuous-v2': 1}
+               'LunarLanderContinuous-v2': 1,
+               'HalfCheetah-v2': 1,
+               'Humanoid-v2': 1}
 
     kwargs = dict(
         max_episodes=max_episodes,

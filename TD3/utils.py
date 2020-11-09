@@ -1,7 +1,6 @@
 import tensorflow as tf
 import numpy as np
 
-
 def get_vars(scope):
     return [x for x in tf.compat.v1.global_variables() if scope in x.name]
 

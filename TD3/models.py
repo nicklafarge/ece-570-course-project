@@ -34,6 +34,7 @@ class Critic(Model):
         return Q, action_grads
 
     def define_optimizers(self, r_ph, gamma, d_ph, q, q1_targ, q2_targ):
+
         # Bellman backup for Q functions, using Clipped Double-Q targets
         min_q_targ = tf.minimum(q1_targ, q2_targ)
         backup = tf.stop_gradient(r_ph + gamma * (1 - d_ph) * min_q_targ)
