@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH -o .templogs/sc.out-%a
-#SBATCH -a 1-24
+#SBATCH -a 1-8
 
 # Load Python Module
 source $HOME/VirtualEnvs/research3/bin/activate
