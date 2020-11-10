@@ -187,8 +187,8 @@ def train_agent(env_name, agent_class, restore_from_file=False, **kwargs):
     # https://github.com/openai/gym/wiki/Table-of-environments
 envs = [
     'Pendulum-v0',
-    'BipedalWalker-v3',
-    'BipedalWalkerHardcore-v3',
+    'BipedalWalker-v2',
+    'BipedalWalkerHardcore-v2',
     'LunarLanderContinuous-v2',
     # 'HalfCheetah-v2',
     # 'Humanoid-v2',
