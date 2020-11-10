@@ -190,14 +190,14 @@ envs = [
     'BipedalWalker-v3',
     'BipedalWalkerHardcore-v3',
     'LunarLanderContinuous-v2',
-    'HalfCheetah-v2',
-    'Humanoid-v2',
-    'Hopper-v2',
-    'Walker2d-v2',
-    'Ant-v2',
-    'Reacher-v2',
-    'InvertedPendulum-v2',
-    'InvertedDoublePendulum-v2'
+    # 'HalfCheetah-v2',
+    # 'Humanoid-v2',
+    # 'Hopper-v2',
+    # 'Walker2d-v2',
+    # 'Ant-v2',
+    # 'Reacher-v2',
+    # 'InvertedPendulum-v2',
+    # 'InvertedDoublePendulum-v2'
 ]
 agents = [
     Td3Agent,
