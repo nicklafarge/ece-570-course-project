@@ -146,8 +146,8 @@ def compute_rolling_average(scores, N):
 def train_agent(env_name, agent_class, restore_from_file=False, **kwargs):
     agent_save = Path('.save') / agent_class.__name__
     save_location = agent_save / env_name
-    if not agent_save.exists():
-        agent_save.mkdir()
+    # if not agent_save.exists():
+    #     agent_save.mkdir()
 
     if not save_location.exists():
         save_location.mkdir()
@@ -184,7 +184,7 @@ def train_agent(env_name, agent_class, restore_from_file=False, **kwargs):
     return agent, data
 
 
-# https://github.com/openai/gym/wiki/Table-of-environments
+    # https://github.com/openai/gym/wiki/Table-of-environments
 envs = [
     'Pendulum-v0',
     'BipedalWalker-v3',
@@ -212,9 +212,9 @@ agent_class = config[1]
 
 agent, data = train_agent(env_name,
                           agent_class,
-                          max_time=100,
-                          save_frequency=100,
-                          max_episodes=200,
+                          max_time=500,
+                          save_frequency=10,
+                          max_episodes=50,
                           n_deterministic_episodes=0,
                           restore_from_file=False,
                           # max_episodes=0,
