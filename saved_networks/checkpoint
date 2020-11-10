@@ -1,2 +1,0 @@
-model_checkpoint_path: "td3_nn-500"
-all_model_checkpoint_paths: "td3_nn-500"

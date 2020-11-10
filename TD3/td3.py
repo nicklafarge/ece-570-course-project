@@ -4,7 +4,7 @@ from TD3.utils import get_vars, ReplayBuffer
 import numpy as np
 import tensorflow as tf
 from pathlib import Path
-
+import os
 
 class Td3Agent(GymAgent):
     def __init__(self, state_size, action_size,
@@ -28,7 +28,6 @@ class Td3Agent(GymAgent):
                  actor_network_layer_sizes=(256, 256),
                  critic_network_layer_sizes=(256, 256),
                  actor_limit=1.0,
-                 save_filename=Path('saved_networks'),
                  episode_number=None,
                  **kwargs
                  ):
@@ -53,7 +52,7 @@ class Td3Agent(GymAgent):
             actor_limit: limit in action size
 
         """
-        super().__init__(state_size, action_size)
+        super().__init__(state_size, action_size, **kwargs)
         self.gamma = gamma
         self.actor_lr = pi_lr
         self.critic_lr = q_lr
@@ -74,8 +73,9 @@ class Td3Agent(GymAgent):
         self.actor_network_layer_sizes = actor_network_layer_sizes
         self.critic_network_layer_sizes = critic_network_layer_sizes
         self.actor_limit = actor_limit
-        self.save_filename = save_filename
-        self.nn_name = 'td3_nn'
+
+        if not self.save_filename.exists():
+            self.save_filename.mkdir()
 
         self.critic_losses = []
         self.actor_losses = []
@@ -121,7 +121,10 @@ class Td3Agent(GymAgent):
             inter_op_parallelism_threads=1)
         self.sess = tf.compat.v1.InteractiveSession(config=session_conf)
 
-        self._setup_saver(restore_from_file, episode_number)
+        successful = self._setup_saver(self.sess, restore_from_file, episode_number)
+
+        if not successful:
+            self.sess.run(self.target_init)
 
     def on_t_update(self, old_state, action, new_state, reward, done):
         self.total_step_counter += 1
@@ -138,40 +141,15 @@ class Td3Agent(GymAgent):
         self.current_episode_number = episode_number
 
         if self.current_episode_number > 0 and self.current_episode_number % self.save_frequency == 0:
-            self.save(self.current_episode_number)
-
-    def _setup_saver(self, restore_from_file, saved_episode_number):
-
-        # Setup variables for saving/resuming
-        with tf.compat.v1.variable_scope('counter'):
-            self.episode_counter = tf.Variable(0, name='episode_counter')
-            self.episode_counter_ph = tf.compat.v1.placeholder(tf.int32, name='episode_counter_ph')
-            self.update_episode_number = self.episode_counter.assign(self.episode_counter_ph)
-
-        # In case we want to save part of the way through.
-        self.saver = tf.compat.v1.train.Saver(max_to_keep=None)  # Keep ALL of the saved agents
-
-        restore_successful = False
-
-        # Restore from file
-        if restore_from_file:
-            restore_successful = self.restore(episode_number=saved_episode_number)
-
-        if not restore_successful:
-            self.sess.run(tf.compat.v1.global_variables_initializer())
-            self.sess.run(self.target_init)
+            self.save(self.sess, self.current_episode_number)
 
     def optimize(self):
-
-        # q_loss = self.sess.run([self.Q_loss], feed_dict)
-        # pi_loss = 0
 
         q_losses_batch = []
         pi_losses_batch = []
         for j in range(self.epochs):
             batch = self.replay_buffer.sample_batch(self.batch_size)
 
-            a_grads = self.sess.run(self.q1_pi_action_grads, feed_dict={self.x_ph: batch['states']})[0]
             feed_dict = {self.x_ph: batch['states'],
                          self.x2_ph: batch['new_states'],
                          self.a_ph: batch['actions'],
@@ -201,16 +179,13 @@ class Td3Agent(GymAgent):
         action_fn = self.deterministic_action if deterministic else self.sample_action
         action = self.sess.run(action_fn, feed_dict=feed_dict)[0]
 
-        action[0] = np.clip(action[0], -1, 1)
         return action
 
     def _init_target(self):
-        # Polyak averaging for target variables
         self.target_update = tf.group([tf.compat.v1.assign(v_targ, self.polyak * v_targ + (1 - self.polyak) * v_main)
                                        for v_main, v_targ in
                                        zip(get_vars(self.main_scope), get_vars(self.target_scope))])
 
-        # Initializing targets to match main variables
         self.target_init = tf.group([tf.compat.v1.assign(v_targ, v_main)
                                      for v_main, v_targ in
                                      zip(get_vars(self.main_scope), get_vars(self.target_scope))])
@@ -263,29 +238,3 @@ class Td3Agent(GymAgent):
         self.update_critic = self.critic1.optimizer.minimize(self.critic_loss,
                                                              var_list=get_vars('main/critic'))
 
-    def save(self, global_step=0):
-        self.sess.run(self.update_episode_number,
-                      feed_dict={self.episode_counter_ph: self.current_episode_number})
-        filedir = str(self.save_filename / self.nn_name )
-        self.saver.save(self.sess, filedir, global_step=global_step)
-
-    def restore(self, episode_number=False):
-        if not self.save_filename.exists():
-            return False
-
-        file_names = os.listdir(str(self.save_filename))
-        file_names = [x for x in file_names if '.meta' in x]
-        numbers = [int(x[7:x.index('.meta')]) for x in file_names]
-
-        if not numbers:
-            return False
-
-        if not episode_number:
-            episode_number = np.max(numbers)
-
-        checkpoint_path = self.save_filename / f"{self.nn_name}-{episode_number}"
-        new_saver = tf.compat.v1.train.import_meta_graph(str(checkpoint_path) + '.meta')
-        new_saver.restore(self.sess, str(checkpoint_path))
-
-        self.current_episode_number = episode_number
-        return True

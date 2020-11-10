@@ -3,46 +3,44 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: main.aux
 The style file: icml2020.bst
 Database file #1: references.bib
-Warning--I didn't find a database entry for "Fujimoto:2018_TD3"
-You've used 3 entries,
+You've used 6 entries,
             2773 wiz_defined-function locations,
-            612 strings with 5560 characters,
-and the built_in function-call counts, 1732 in all, are:
-= -- 147
-> -- 108
-< -- 2
-+ -- 36
-- -- 33
-* -- 141
-:= -- 258
-add.period$ -- 12
-call.type$ -- 3
-change.case$ -- 20
-chr.to.int$ -- 3
-cite$ -- 6
-duplicate$ -- 83
-empty$ -- 140
-format.name$ -- 36
-if$ -- 369
+            627 strings with 6409 characters,
+and the built_in function-call counts, 3978 in all, are:
+= -- 309
+> -- 378
+< -- 3
++ -- 126
+- -- 120
+* -- 364
+:= -- 636
+add.period$ -- 21
+call.type$ -- 6
+change.case$ -- 58
+chr.to.int$ -- 6
+cite$ -- 12
+duplicate$ -- 139
+empty$ -- 236
+format.name$ -- 128
+if$ -- 806
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 3
-newline$ -- 26
-num.names$ -- 12
-pop$ -- 47
+missing$ -- 6
+newline$ -- 41
+num.names$ -- 24
+pop$ -- 125
 preamble$ -- 1
-purify$ -- 17
+purify$ -- 52
 quote$ -- 0
-skip$ -- 65
+skip$ -- 132
 stack$ -- 0
-substring$ -- 46
-swap$ -- 18
+substring$ -- 52
+swap$ -- 22
 text.length$ -- 2
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 33
+type$ -- 61
 warning$ -- 0
-while$ -- 12
+while$ -- 21
 width$ -- 0
-write$ -- 51
-(There was 1 warning)
+write$ -- 89

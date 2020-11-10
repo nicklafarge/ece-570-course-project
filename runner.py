@@ -1,21 +1,39 @@
 import gym
 import matplotlib.pyplot as plt
 from TD3 import Td3Agent
+from DDPG import DdpgAgent
 import numpy as np
 import tensorflow as tf
 from gym.wrappers.monitoring.video_recorder import VideoRecorder
+from pathlib import Path
+import pickle
+import sys
+import itertools
+
+# For running in parallel
+if len(sys.argv) == 1:
+    task_id = 2
+    num_tasks = task_id
+else:
+    task_id = int(sys.argv[1])
+    num_tasks = int(sys.argv[2])
 
 
 def run_learner(env_name,
                 agent_class,
                 max_episodes=1000,
-                n_greedy_episodes=10,
+                n_deterministic_episodes=10,
                 output_freq=10,
                 env_seed=None,
                 tf_seed=None,
-                max_time=100,
+                max_time=200,
+                video_save_root=None,
                 **kwargs):
     env = gym.make(env_name)
+    kwargs['actor_limit'] = env.action_space.high[0]
+
+    if video_save_root and not video_save_root.exists():
+        video_save_root.mkdir()
 
     # SEED EVERYTHING
     if env_seed:
@@ -33,11 +51,15 @@ def run_learner(env_name,
     agent = agent_class(state_size, action_size, **kwargs)
 
     # List of scores
-    score_list = []
-    greedy_runs = []
+    return_info = dict(score_list=[],
+                       deterministic_runs=[],
+                       states=[],
+                       actions=[],
+                       rewards=[],
+                       dones=[])
 
     # Iterate through episodes
-    for episode in range(max_episodes + n_greedy_episodes):
+    for episode in range(max_episodes + n_deterministic_episodes):
         state = env.reset()
 
         deterministic_action = episode >= max_episodes
@@ -46,9 +68,14 @@ def run_learner(env_name,
 
         video_recorder = None
 
-        if deterministic_action:
-            video_path = f'.save/{env_name}-ppo-greedy-{episode}.mp4'
-            video_recorder = VideoRecorder(env, video_path, enabled=video_path is not None)
+        states = []
+        rewards = []
+        actions = []
+        dones = []
+
+        if deterministic_action and video_save_root:
+            video_path = str(video_save_root / f'episode-{episode}.mp4')
+            video_recorder = VideoRecorder(env, video_path, enabled=video_save_root is not None)
 
         done = False
         t = 0
@@ -62,6 +89,11 @@ def run_learner(env_name,
             action = agent.act(state, deterministic=deterministic_action)
 
             new_state, reward, done, info = env.step(action)
+
+            states.append(state)
+            actions.append(action)
+            rewards.append(reward)
+            dones.append(done)
 
             # enforce maximum time for episode
             done = done or t == max_time - 1
@@ -84,87 +116,131 @@ def run_learner(env_name,
                           f"greedy: {deterministic_action}")
 
                 if episode > 0 and episode % 100 == 0:
-                    avg_reward = np.average(score_list[-100:])
+                    avg_reward = np.average(return_info['score_list'][-100:])
                     print(f"Average reward over 100 episodes: {avg_reward}")
 
                 # Train agent
                 if deterministic_action:
-                    greedy_runs.append(episode_rewards_sum)
+                    return_info['deterministic_runs'].append(episode_rewards_sum)
                     video_recorder.close()
                     video_recorder.enabled = False
                 else:
-                    score_list.append(episode_rewards_sum)
+                    return_info['score_list'].append(episode_rewards_sum)
                     agent.on_episode_complete(episode)
 
+                return_info['states'].append(states)
+                return_info['actions'].append(actions)
+                return_info['rewards'].append(rewards)
+                return_info['dones'].append(dones)
             t += 1
 
-    print(len(score_list))
-    agent.save()
+    agent.save(agent.sess, global_step=max_episodes)
 
-    return agent, score_list, greedy_runs
+    return agent, return_info
 
 
 def compute_rolling_average(scores, N):
     return np.convolve(scores, np.ones((N,)) / N, mode='valid')
 
 
-def run_agent():
-    # env_name = 'CartPole-v1'
-    # env_name = 'MountainCarContinuous-v0'
-    # env_name = 'Pendulum-v0'
-    # env_name = 'BipedalWalker-v3'
-    # env_name = 'LunarLanderContinuous-v2'
-    # env_name = 'HalfCheetah-v2'
-    env_name = 'Humanoid-v2'
+def train_agent(env_name, agent_class, restore_from_file=False, **kwargs):
+    agent_save = Path('.save') / agent_class.__name__
+    save_location = agent_save / env_name
+    if not agent_save.exists():
+        agent_save.mkdir()
 
-    agent_class = Td3Agent
-
-    n_greedy_episodes = 5
-    max_episodes = 1000
-
-    max_time = 200
-    output_freq = 10
-
-    a_scale = {'Pendulum-v0': 2,
-               'BipedalWalker-v3': 1,
-               'LunarLanderContinuous-v2': 1,
-               'HalfCheetah-v2': 1,
-               'Humanoid-v2': 1}
+    if not save_location.exists():
+        save_location.mkdir()
 
     kwargs = dict(
-        max_episodes=max_episodes,
-        max_time=max_time,
-        n_greedy_episodes=n_greedy_episodes,
-        output_freq=output_freq,
-        actor_limit=a_scale[env_name]
+        save_filename=save_location / 'network',
+        video_save_root=save_location / 'animations',
+        restore_from_file=restore_from_file,
+        **kwargs
     )
 
-    agent, scores, greedy_scores = run_learner(env_name, agent_class, **kwargs)
+    agent, info = run_learner(env_name, agent_class, **kwargs)
 
-    N_rolling = 100
-    x_vals = range(len(scores))[N_rolling - 1:]
+    data_location = str(save_location / 'training_data')
+    if restore_from_file:
+        with open(data_location, 'rb') as fp:
+            data = pickle.load(fp)
+            data['eval_scores'] = info['deterministic_runs']
+            data['states'] = info['states']
+            data['actions'] = info['actions']
+            data['rewards'] = info['rewards']
+            data['dones'] = info['dones']
+    else:
+        data = dict(
+            scores=info['score_list'],
+            deterministic_scores=info['deterministic_runs'],
+            actor_losses=agent.actor_losses,
+            critic_losses=agent.critic_losses
+        )
 
-    plt.figure()
-    plt.plot(compute_rolling_average(scores, N_rolling), c='r')
-    plt.xlabel('Episode Number')
-    plt.ylabel('Reward (Rolling Average)')
-    plt.title(f'{env_name} Trial Results')
-    # plt.hlines(195, x_vals[0], x_vals[-1], color='k')
-    plt.show(block=False)
+        with open(data_location, 'wb') as fp:
+            pickle.dump(data, fp, protocol=pickle.HIGHEST_PROTOCOL)
 
-    plt.figure()
-    plt.subplot(2, 1, 1)
-    plt.plot(compute_rolling_average(np.abs(agent.actor_losses), N_rolling), c='r')
-    plt.title('Actor Critic Loss Functions')
-    plt.ylabel('Actor Loss')
-
-    plt.subplot(2, 1, 2)
-    plt.plot(compute_rolling_average(np.abs(agent.critic_losses), N_rolling), c='r')
-    plt.ylabel('Critic Loss')
-    plt.xlabel('Episode Number')
-    plt.show(block=False)
-
-    return agent, scores, greedy_scores
+    return agent, data
 
 
-agent, scores, greedy_scores = run_agent()
+# https://github.com/openai/gym/wiki/Table-of-environments
+envs = [
+    'Pendulum-v0',
+    'BipedalWalker-v3',
+    'BipedalWalkerHardcore-v3',
+    'LunarLanderContinuous-v2',
+    'HalfCheetah-v2',
+    'Humanoid-v2',
+    'Hopper-v2',
+    'Walker2d-v2',
+    'Ant-v2',
+    'Reacher-v2',
+    'InvertedPendulum-v2',
+    'InvertedDoublePendulum-v2'
+]
+agents = [
+    Td3Agent,
+    DdpgAgent
+]
+
+options = list(itertools.product(envs,  agents))
+config = options[task_id-1]
+env_name = config[0]
+agent_class = config[1]
+
+
+agent, data = train_agent(env_name,
+                          agent_class,
+                          max_time=100,
+                          save_frequency=100,
+                          max_episodes=200,
+                          n_deterministic_episodes=0,
+                          restore_from_file=False,
+                          # max_episodes=0,
+                          # n_deterministic_episodes=1,
+                          # restore_from_file=True,
+                          # episode_number=600,
+                          )
+
+# N_rolling = 10
+#
+# plt.figure()
+# plt.plot(compute_rolling_average(data['scores'], N_rolling), c='r')
+# plt.xlabel('Episode Number')
+# plt.ylabel('Reward (Rolling Average)')
+# plt.title(f'{env_name} Trial Results')
+# # plt.hlines(195, x_vals[0], x_vals[-1], color='k')
+# plt.show(block=False)
+
+    # plt.figure()
+    # plt.subplot(2, 1, 1)
+    # plt.plot(compute_rolling_average(np.abs(data['actor_losses']), N_rolling), c='r')
+    # plt.title('Actor Critic Loss Functions')
+    # plt.ylabel('Actor Loss')
+    #
+    # plt.subplot(2, 1, 2)
+    # plt.plot(compute_rolling_average(np.abs(data['critic_losses']), N_rolling), c='r')
+    # plt.ylabel('Critic Loss')
+    # plt.xlabel('Episode Number')
+    # plt.show(block=False)

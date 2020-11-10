@@ -6,7 +6,7 @@
 \usepackage{graphicx}
 \usepackage{subfigure}
 \usepackage{booktabs}
-
+\usepackage{amsmath}
 % hyperref makes hyperlinks in the resulting PDF.
 % If your build breaks (sometimes temporarily if a hyperlink spans a page)
 % please comment out the following usepackage line and replace
@@ -18,6 +18,7 @@
 
 % Use the following line for the initial blind version submitted for review:
 \usepackage{icml2020}
+\pagestyle{plain} 
 
 % If accepted, instead use the following line for the camera-ready submission:
 %\usepackage[accepted]{icml2020}
@@ -57,27 +58,36 @@ blar
 
 
 % Approximately two to three pages of this paper should be a substantive critique of the three (or more) papers that you have read.
-\section{Paper Critique}
+\section{Paper Critiques}
 
-\citep{td3}
-\citep{sac}
-\citep{ofir}
+A summary and critical review is provided for each of the three papers selected for this project. I have chosen to reproduce results form the first paper, \citep{td3}, and, hence, a more detailed summary and review is included Paper 1. 
+
+% 1. Summary of each paper – You should summarize your paper in your own words. Note plagiarizing the abstract or sentences from the paper will not be accepted as per the syllabus. If you understand the paper well enough, you should be able to summarize the main points in your own words. If you have any questions about plagiarism, please feel to ask anonymously on Piazza or email me If you ever use any quotes from the paper you must surround the sentence in quotes and place a proper citation. You should include citations to each paper in this section when you discuss them.
+
+% 2. Critical review of each paper – You should provide a critical review of each paper. This should review the strengths and weaknesses of the paper as well as any questions you would want to ask the authors. You could also discuss anything else about the paper including other related works that were not cited or how it relates to the other papers you selected (e.g., in what contexts it might be better and what context it might be worse than other work). Overall, the goal of this part is to demonstrate that you understand the paper deeply rather than just superficially.
+
+\subsection{Paper 1: \citep{td3}}
+\subsubsection{Summary}
+Fujimoto et al. propose improvements to the well-known deep Reinforcement Learning (RL) scheme Deep Deterministic Policy Gradient (DDPG) originally detailed by \citep{ddpg}. The proposed algorithm is referred to as either ``Twin-Delayed Deep Deterministic Policy Gradient'', ``Twin-Delayed DDPG'', or most concisely, TD3. The emergence of the TD3 algorithm can be directly traced back to early RL contributions through a series of major contributions.  Various RL approaches use the state-action value function $Q(s,a)$,  updated by iterating on the Bellman equation, to formulate an effective policy for off-policy control. An early breakthrough for problems with discrete state and action spaces occurred in 1989 with \textit{Q-Learning}: a temporal difference learning algorithm that allows powerful agents to be trained in an off-policy manor (off-policy indicates that data may be collected from any policy, not necessarily from the agent being optimized) \citep{textbook}. While effective, this approach, along with other RL approaches at the time, was limited by the assumption of discrete spaces. A major breakthrough in Reinforcement Learning came in 2015 when the $Q$-Learning algorithm was extended to continuous state space problems with the Deep $Q$-Network (DQN) algorithm \citep{dqn}. The DQN approach involves the same update rule as $Q$-Learning, but rather than direct computation, is able to effectively estimate the $Q$ function using a neural network: alleviating the need for tabulated results. However, similar to $Q$-Learning, DQN still suffered from the discrete action space assumption. This was okay for Atari game tasks, where actions were limited to available Atari controls, but limited the applicability for continuous control tasks, such as robotics. Addressing this step, \citep{ddpg} introduced Deep Deterministic Policy Gradient (DDPG): an extension of DQN that uses a second ``actor'' neural network to construct a parameterized action function, and performed the $Q(s,a)$ update with the new actor network. A key contribution with DDPG is the inclusion of ``target'' networks for both the actor and value (i.e. \textit{critic}) networks. By including duplicate networks, the second ``target'' networks may be held constant while the actual networks are updated. This is a more stable process because it doesn't involve continuously updating estimates to be used in the minibatch updates. While powerful, however, DDPG contained several notable limitation. In particular, the value function is often over-estimated, which leads to a significant bias in learning.
+
+Twin-Delated DDPG addresses the instability of DDPG in several ways. First, two separate value networks are included. By taking the minimum value estimate of the two networks mitigates the effect of the value function over-estimation bias present in DDPG (along with other actor-critic schemes). Next, DDPG involves \textit{bootstrapping}, i.e., performing updates based on estimates rather than true values. Noisy estimates cause noisy gradients which pose significant difficulty in network optimization. \cite{td3} seek to mitigate this error by delaying updates to the actor network in hopes that additional updates to the critic network will provide more accurate estimates for the actor updates. Finally, to avoid peak overfitting in the policy network, policy smoothing is included, which introduces a small amount of clipped random noise to the output of the target policy. Together, these improvements form the TD3 variant of DDPG.
+
+\subsubsection{Critical Review}
+
+Fujimoto et. al. provide an extremely practical and concise account of their algorithm, contributions, and overall approach. Results from experiments are very compelling: outperforming state-of-the-art algorithms in virtually every task (including their improved version of DDPG). While I understand this is not possible for a conference paper with length limitations, one drawback of this paper is that I don't think it would really be possible to fully understand the algorithm from this paper as a standalone document. In particular, understanding DDPG is vital to understanding TD3's improvements. In turn, an thorough understanding DDPG requires knowing the DQN algorithm, which itself builds off a base-knowledge of Q-Learning. I saw these as the most important `steps' leading up to TD3, but this is by no means an exhaustive literature background for the TD3 approach. While this necessitated a significant amount of additional reading to fully grasp the approach, I don't fault the authors because they had a very helpful ``Related Work'' section that directed me to various sources to understand more of the underlying theory that enables their approach.
+
+Literature review aside, there are several additional specific points worth mentioning. First, the authors did an excellent job in their discussion of the overestimation bias of value functions in actor-critic approaches. In addition to a theoretical understanding, the numerical results enhanced the discussion, and made it easily understandable for the reader. If I had to single out one part that could perhaps be clarified, it would be the section on smoothing regularization. I understand how the noise helps negate negative effects of peaks in the value estimate, however I don't think it is very clear how this noise should be produced, what scale it should be, and why it must come from a normal distribution. The appendices address how the policy must be clipped to avoid impossible actions from the noise, but I think a more thorough theoretical analysis of the underlying statistics could reveal a more rigorous way to choose the random process. One final concern I have about the approach itself is the overall complexity. Although results demonstrate its performance, the complexity of having six total neural networks (DQN originally only had one!) indicates to me that there may be unintended consequences of these complex interactions.
+
+\subsection{Paper 2: \citep{sac}}
+\subsubsection{Summary}
+\cite{sac}
+\subsubsection{Critical Review}
+\subsection{Paper 3: \citep{ofir}}
+\subsubsection{Summary}
+\subsubsection{Critical Review}
 
 % Approximately three to four pages of this paper should be a description of your implementation, evaluation and discussion of the method from at least one of the papers.
 \section{Implementation Results}
-
-
-\section{Implementation Goal}
-I have chosen to implement the reinforcement learning scheme suggested by \citep{Fujimoto:2018_TD3} for my final project. This off-policy algorithm, called Twin-Delayed Deep Deterministic Policy Gradient (TD3) is a powerful approach to continuous control tasks. My goal is to implement the algorithm itself (using my own implementation approach), and test in on various toy problems provided through AIGym. Ideally, I would like to apply to the learning framework to MuJoCo robotics tasks. Through these toy problems I hope to get a better sense of hyperparameter tuning, and understand at a higher level the stochasticity of the underlying learning framework. Lastly, I want to see how customizations, such as input standardization, can affect learning performance.
-
-\section{Implementation Plan}
-Many implementations exist online for TD3. I would like to create my own, using two specific implementations as references. In particular, the authors provide a version of their code on Github\footnote{\url{https://github.com/sfujim/TD3}}, as well as a version from OpenAI Spinning Up\footnote{\url{https://github.com/openai/spinningup/}} -- an open source educational tool created by OpenAI. While I will use their code as a reference, I will write my own version of both the learning scheme, and the script for training the algorithm. Having implemented my own version of this algorithm, I will test it on a variety of baseline toy problems. I would like to include some classical control problems, such as the inverted pendulum, as well as robotics problems provided by MuJoCo. By using standard toy problems, I can evaluate my implementation and hyperparameters to baseline results published by both \citep{Fujimoto:2018_TD3} and by OpenAI Spinning Up, to verify my implementation works as intended.
-
-\section{Preliminary Implementation}
-I have implemented my version of TD3, and tested it with some basic problems. In particular, I have used the inverted pendulum problem to assess how well the learning performs. My implementation is based on OpenAI Spinning Up's tensorflow version of TD3, with significant changes in the overall code architecture and runner script. My implementation seems to be performing as intended, but more a more rigorous analysis will be needed to determine the efficacy of my code. For now, I am just using the hyperparamters and network structure suggested by the paper, but longer term I'm hoping to analyze those hyperparameters to see which parameters the algorithm is most sensitive to.
-
-\section{Preliminary Results}
-To demonstrate preliminary results, consider the classical controls problem of the inverted pendulum. The agent is tasks with spinning up and balancing the inverted pendulum. A screenshot from one arbitrary trial is depicted in Figure \ref{fig:pendulum}. At first, the agent is unable to perform this task. However, through training, the agent quickly learns an effective policy, and is able to spin up and balance the pendulum. This learning can be visualized in two ways. First, a running average for future discounted reward over episodes in plotted in Figure \ref{fig:pendulum_reward}. The immediate upward trend shows that the learning algorithm is working (though future work will be needed to analyze how well it works). Next, the loss function values for the actor and critic networks over training are plotted in Figure \ref{fig:pendulum_loss}. These plots show convergence toward zero for the loss functions, indicating both networks are being trained properly.
 
 \bibliography{references}
 \bibliographystyle{icml2020}
