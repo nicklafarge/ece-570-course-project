@@ -17,6 +17,10 @@
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
 \citation{td3}
+\citation{sac}
+\citation{ofir}
+\citation{td3}
+\citation{ppo}
 \citation{td3}
 \citation{ddpg}
 \citation{textbook}
@@ -24,13 +28,52 @@
 \citation{ddpg}
 \citation{td3}
 \citation{sac}
+\citation{td3}
 \citation{sac}
+\citation{sac}
+\citation{ppo}
 \citation{ofir}
+\citation{ofir}
+\citation{sac}
+\citation{td3}
+\citation{ofir}
+\citation{ofir}
+\citation{td3}
+\citation{ofir}
+\citation{ofir}
+\citation{ofir}
+\citation{SpinningUp2018}
+\citation{td3}
+\citation{SpinningUp2018}
+\citation{td3}
+\citation{td3}
+\newlabel{sec:implementation}{{2.1}{4}{}{subsection.2.1}{}}
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{tab:actor}{{1}{4}{TD3 Actor Architecture\relax }{table.caption.1}{}}
+\newlabel{tab:critic}{{2}{4}{TD3 Critic Architecture\relax }{table.caption.2}{}}
+\newlabel{sec:hyperparams}{{2.1.1}{4}{}{subsubsection.2.1.1}{}}
+\citation{gym}
+\citation{td3}
+\citation{SpinningUp2018}
+\newlabel{fig:td3_vs_ddpg}{{1}{5}{Reward moving average of DDPG (red) vs TD3 (blue) across four sample OpenAI environments. TD3 reaches a more optimal solution than DDPG in three of four environments, and is comparable to DDPG in the simplest example (Pendulum-v0). However, despite performing better than DDPG on BipedalWalkerHardcore-v2, neither policy is able to solve the given problem.\relax }{figure.caption.3}{}}
+\newlabel{sec:eval}{{2.2}{5}{}{subsection.2.2}{}}
+\newlabel{tab:hyperparams}{{3}{5}{Parameters used in experiments\relax }{table.caption.4}{}}
+\citation{td3}
+\citation{SpinningUp2018}
+\citation{td3}
+\citation{td3}
+\newlabel{fig:pendulum_episode}{{3}{7}{Sample episode of TD3 agent simulated on the Pendulum-v0 environment. The obtain the most reward, the agent must first spin the inverted pendulum up so it is balanced, and then maintain the balance for the remainder of the episode.In the sample episode, the agent quickly spings the pendulum up to vertical, (a) and (b), and then maintains vertical orientation through a series of constant control outputs, (c), (d), (e).\relax }{figure.caption.6}{}}
+\newlabel{fig:bipedal_episode}{{4}{7}{Sample episode of TD3 agent simulated on the BipedalWalker-v3 environment. The bipedal walker is tasked to walk for as long as possible until reaching the end of the environment despite shifts in the terrain. The walker easily reaches the end (e) under the TD3-generated policy. The red line extending from the robot indicates lidar readings that form the observation signal for the environment.\relax }{figure.caption.7}{}}
+\newlabel{fig:hardcore_episode}{{5}{7}{Sample episode of TD3 agent simulated on the BipedalWalkerHardcore-v3 environment. During training, the agent was never able to reach a successful policy, and immediately fails the sample episode. A small amount of forward progress is made, but progress immediately halts upon reaching the first obstacle (d), and remains at this point for the remainder of the episode (e).\relax }{figure.caption.8}{}}
+\newlabel{fig:lander_episode}{{6}{7}{Sample episode of TD3 agent simulated on the LunarLanderContinuous-v2 environment. The lander initially is poised to miss the target landing area (a). By effectively actuating thrusters governed by the TD3-genterated policy (b),(c),(d), the agent successfully reaches the landing zone (e)\relax }{figure.caption.9}{}}
 \bibdata{references}
-\bibcite{td3}{{1}{2018}{{Fujimoto et~al.}}{{Fujimoto, van Hoof, and Meger}}}
-\bibcite{sac}{{2}{2018}{{Haarnoja et~al.}}{{Haarnoja, Zhou, Abbeel, and Levine}}}
-\bibcite{ddpg}{{3}{2015}{{Lillicrap et~al.}}{{Lillicrap, Hunt, Pritzel, Heess, Erez, Tassa, Silver, and Wierstra}}}
-\bibcite{dqn}{{4}{2015}{{Mnih et~al.}}{{Mnih, Kavukcuoglu, Silver, Rusu, Veness, Bellemare, Graves, Riedmiller, Fidjeland, Ostrovski, Petersen, Beattie, Sadik, Antonoglou, King, Kumaran, Wierstra, Legg, and Hassabis}}}
-\bibcite{ofir}{{5}{2018}{{Nachum et~al.}}{{Nachum, Gu, Lee, and Levine}}}
-\bibcite{textbook}{{6}{2018}{{Sutton \& Barto}}{{Sutton and Barto}}}
+\bibcite{SpinningUp2018}{{1}{2018}{{Achiam}}{{}}}
+\bibcite{gym}{{2}{2016}{{Brockman et~al.}}{{Brockman, Cheung, Pettersson, Schneider, Schulman, Tang, and Zaremba}}}
+\bibcite{td3}{{3}{2018}{{Fujimoto et~al.}}{{Fujimoto, van Hoof, and Meger}}}
+\bibcite{sac}{{4}{2018}{{Haarnoja et~al.}}{{Haarnoja, Zhou, Abbeel, and Levine}}}
+\bibcite{ddpg}{{5}{2015}{{Lillicrap et~al.}}{{Lillicrap, Hunt, Pritzel, Heess, Erez, Tassa, Silver, and Wierstra}}}
+\bibcite{dqn}{{6}{2015}{{Mnih et~al.}}{{Mnih, Kavukcuoglu, Silver, Rusu, Veness, Bellemare, Graves, Riedmiller, Fidjeland, Ostrovski, Petersen, Beattie, Sadik, Antonoglou, King, Kumaran, Wierstra, Legg, and Hassabis}}}
+\bibcite{ofir}{{7}{2018}{{Nachum et~al.}}{{Nachum, Gu, Lee, and Levine}}}
+\bibcite{ppo}{{8}{2017}{{Schulman et~al.}}{{Schulman, Wolski, Dhariwal, Radford, and Klimov}}}
+\bibcite{textbook}{{9}{2018}{{Sutton \& Barto}}{{Sutton and Barto}}}
 \bibstyle{icml2020}

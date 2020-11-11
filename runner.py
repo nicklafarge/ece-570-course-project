@@ -12,7 +12,7 @@ import itertools
 
 # For running in parallel
 if len(sys.argv) == 1:
-    task_id = 2
+    task_id = 1
     num_tasks = task_id
 else:
     task_id = int(sys.argv[1])
@@ -134,13 +134,9 @@ def run_learner(env_name,
                 return_info['dones'].append(dones)
             t += 1
 
-    agent.save(agent.sess, global_step=max_episodes)
+    # agent.save(agent.sess, global_step=max_episodes)
 
     return agent, return_info
-
-
-def compute_rolling_average(scores, N):
-    return np.convolve(scores, np.ones((N,)) / N, mode='valid')
 
 
 def train_agent(env_name, agent_class, restore_from_file=False, **kwargs):
@@ -183,14 +179,15 @@ def train_agent(env_name, agent_class, restore_from_file=False, **kwargs):
 
     return agent, data
 
-
     # https://github.com/openai/gym/wiki/Table-of-environments
+
+
 envs = [
-    'Pendulum-v0',
-    'BipedalWalker-v2',
-    'BipedalWalkerHardcore-v2',
-    'LunarLanderContinuous-v2',
-    # 'HalfCheetah-v2',
+    # 'Pendulum-v0',
+    # 'BipedalWalker-v2',
+    # 'BipedalWalkerHardcore-v3',
+    # 'LunarLanderContinuous-v2',
+    'HalfCheetah-v2',
     # 'Humanoid-v2',
     # 'Hopper-v2',
     # 'Walker2d-v2',
@@ -201,26 +198,26 @@ envs = [
 ]
 agents = [
     Td3Agent,
-    DdpgAgent
+    # DdpgAgent
 ]
 
-options = list(itertools.product(envs,  agents))
-config = options[task_id-1]
+options = list(itertools.product(envs, agents))
+config = options[task_id - 1]
 env_name = config[0]
 agent_class = config[1]
-
 
 agent, data = train_agent(env_name,
                           agent_class,
                           max_time=500,
-                          save_frequency=100,
-                          max_episodes=7000,
-                          n_deterministic_episodes=0,
-                          restore_from_file=False,
-                          # max_episodes=0,
-                          # n_deterministic_episodes=1,
-                          # restore_from_file=True,
-                          # episode_number=600,
+                          # save_frequency=100,
+                          max_episodes=6000,
+                          # n_deterministic_episodes=0,
+                          # restore_from_file=False,
+                          # max_episodes=1,
+                          n_deterministic_episodes=1,
+                          restore_from_file=True,
+                          save_frequency=np.pi,
+                          # episode_number=6500,
                           )
 
 # N_rolling = 10
@@ -233,14 +230,14 @@ agent, data = train_agent(env_name,
 # # plt.hlines(195, x_vals[0], x_vals[-1], color='k')
 # plt.show(block=False)
 
-    # plt.figure()
-    # plt.subplot(2, 1, 1)
-    # plt.plot(compute_rolling_average(np.abs(data['actor_losses']), N_rolling), c='r')
-    # plt.title('Actor Critic Loss Functions')
-    # plt.ylabel('Actor Loss')
-    #
-    # plt.subplot(2, 1, 2)
-    # plt.plot(compute_rolling_average(np.abs(data['critic_losses']), N_rolling), c='r')
-    # plt.ylabel('Critic Loss')
-    # plt.xlabel('Episode Number')
-    # plt.show(block=False)
+# plt.figure()
+# plt.subplot(2, 1, 1)
+# plt.plot(compute_rolling_average(np.abs(data['actor_losses']), N_rolling), c='r')
+# plt.title('Actor Critic Loss Functions')
+# plt.ylabel('Actor Loss')
+#
+# plt.subplot(2, 1, 2)
+# plt.plot(compute_rolling_average(np.abs(data['critic_losses']), N_rolling), c='r')
+# plt.ylabel('Critic Loss')
+# plt.xlabel('Episode Number')
+# plt.show(block=False)

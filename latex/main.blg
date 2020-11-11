@@ -3,44 +3,46 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: main.aux
 The style file: icml2020.bst
 Database file #1: references.bib
-You've used 6 entries,
+Warning--empty journal in SpinningUp2018
+You've used 9 entries,
             2773 wiz_defined-function locations,
-            627 strings with 6409 characters,
-and the built_in function-call counts, 3978 in all, are:
-= -- 309
-> -- 378
-< -- 3
-+ -- 126
-- -- 120
-* -- 364
-:= -- 636
-add.period$ -- 21
-call.type$ -- 6
-change.case$ -- 58
-chr.to.int$ -- 6
-cite$ -- 12
-duplicate$ -- 139
-empty$ -- 236
-format.name$ -- 128
-if$ -- 806
+            644 strings with 6920 characters,
+and the built_in function-call counts, 5432 in all, are:
+= -- 427
+> -- 502
+< -- 4
++ -- 168
+- -- 159
+* -- 488
+:= -- 875
+add.period$ -- 32
+call.type$ -- 9
+change.case$ -- 80
+chr.to.int$ -- 9
+cite$ -- 19
+duplicate$ -- 194
+empty$ -- 330
+format.name$ -- 170
+if$ -- 1098
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 6
-newline$ -- 41
-num.names$ -- 24
-pop$ -- 125
+missing$ -- 8
+newline$ -- 58
+num.names$ -- 36
+pop$ -- 171
 preamble$ -- 1
-purify$ -- 52
+purify$ -- 71
 quote$ -- 0
-skip$ -- 132
+skip$ -- 183
 stack$ -- 0
-substring$ -- 52
-swap$ -- 22
+substring$ -- 58
+swap$ -- 24
 text.length$ -- 2
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 61
-warning$ -- 0
-while$ -- 21
+type$ -- 94
+warning$ -- 1
+while$ -- 30
 width$ -- 0
-write$ -- 89
+write$ -- 129
+(There was 1 warning)

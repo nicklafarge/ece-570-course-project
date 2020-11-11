@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import tensorflow as tf
 import os
 import numpy as np
+import logging
 
 class GymAgent(ABC):
 
@@ -64,6 +65,7 @@ class GymAgent(ABC):
         numbers = [int(x[8:x.index('.meta')]) for x in file_names]
 
         if not numbers:
+            logging.warning(f'Could not restore agent at episode {episode_number}')
             return False
 
         if not episode_number:

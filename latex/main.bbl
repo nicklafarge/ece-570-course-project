@@ -1,9 +1,21 @@
-\begin{thebibliography}{6}
+\begin{thebibliography}{9}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Achiam(2018)]{SpinningUp2018}
+Achiam, J.
+\newblock {Spinning Up in Deep Reinforcement Learning}.
+\newblock 2018.
+\newblock URL \url{https://github.com/openai/spinningup}.
+
+\bibitem[Brockman et~al.(2016)Brockman, Cheung, Pettersson, Schneider,
+  Schulman, Tang, and Zaremba]{gym}
+Brockman, G., Cheung, V., Pettersson, L., Schneider, J., Schulman, J., Tang,
+  J., and Zaremba, W.
+\newblock Openai gym, 2016.
 
 \bibitem[Fujimoto et~al.(2018)Fujimoto, van Hoof, and Meger]{td3}
 Fujimoto, S., van Hoof, H., and Meger, D.
@@ -34,6 +46,8 @@ Mnih, V., Kavukcuoglu, K., Silver, D., Rusu, A.~A., Veness, J., Bellemare,
   D., Legg, S., and Hassabis, D.
 \newblock Human-level control through deep reinforcement learning.
 \newblock \emph{Nature}, 518, Feb 2015.
+\newblock URL
+  \url{https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf}.
 
 \bibitem[Nachum et~al.(2018)Nachum, Gu, Lee, and Levine]{ofir}
 Nachum, O., Gu, S.~S., Lee, H., and Levine, S.
@@ -42,6 +56,13 @@ Nachum, O., Gu, S.~S., Lee, H., and Levine, S.
   (NeurIPS)}, volume~31, pp.\  3303--3313, 2018.
 \newblock URL
   \url{https://proceedings.neurips.cc/paper/2018/file/e6384711491713d29bc63fc5eeb5ba4f-Paper.pdf}.
+
+\bibitem[Schulman et~al.(2017)Schulman, Wolski, Dhariwal, Radford, and
+  Klimov]{ppo}
+Schulman, J., Wolski, F., Dhariwal, P., Radford, A., and Klimov, O.
+\newblock Proximal policy optimization algorithms.
+\newblock \emph{CoRR}, abs/1707.06347, 2017.
+\newblock URL \url{http://arxiv.org/abs/1707.06347}.
 
 \bibitem[Sutton \& Barto(2018)Sutton and Barto]{textbook}
 Sutton, R.~S. and Barto, A.~G.
