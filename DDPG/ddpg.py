@@ -306,6 +306,6 @@ class DdpgAgent(GymAgent):
         classes, and are built here.
         """
 
-        self.actor_loss, self.update_actor = self.actor.define_optimizers(self.pi, self.action_grads_ph, self.q_pi)
-        self.critic_loss, self.update_critic = self.critic.define_optimizers(self.r_ph, self.gamma, self.d_ph, self.q,
-                                                                             self.q_pi_target)
+        self.actor_loss, self.update_actor = self.actor.define_optimizer(self.pi, self.action_grads_ph, self.q_pi)
+        self.critic_loss, self.update_critic = self.critic.define_optimizer(self.r_ph, self.gamma, self.d_ph, self.q,
+                                                                            self.q_pi_target)

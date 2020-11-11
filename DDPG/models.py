@@ -71,7 +71,7 @@ class Critic(Model):
         action_grads = tf.gradients(Q, action_source)
         return Q, action_grads
 
-    def define_optimizers(self, r_ph, gamma, d_ph, q, q_pi_target):
+    def define_optimizer(self, r_ph, gamma, d_ph, q, q_pi_target):
         """
         Define optimizer for the critic network.
 
@@ -138,7 +138,7 @@ class Actor(Model):
             pi = self.actor_limit * tf.compat.v1.layers.dense(l2, self.action_size, tf.nn.tanh)
         return pi
 
-    def define_optimizers(self, actor_network, action_grads, q_pi):
+    def define_optimizer(self, actor_network, action_grads, q_pi):
         """
         Define the optimizer for the actor network. Code is included below to compute the update step in multiple ways -
         useful for both debugging and better understanding the underlying algorithm
