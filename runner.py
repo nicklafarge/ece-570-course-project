@@ -1,3 +1,8 @@
+"""
+Runner script for training TD3 or DDPG agents
+Author: Nick LaFarge
+"""
+
 import gym
 import matplotlib.pyplot as plt
 from TD3 import Td3Agent
@@ -7,16 +12,6 @@ import tensorflow as tf
 from gym.wrappers.monitoring.video_recorder import VideoRecorder
 from pathlib import Path
 import pickle
-import sys
-import itertools
-
-# For running in parallel
-if len(sys.argv) == 1:
-    task_id = 1
-    num_tasks = task_id
-else:
-    task_id = int(sys.argv[1])
-    num_tasks = int(sys.argv[2])
 
 
 def run_learner(env_name,
@@ -29,28 +24,49 @@ def run_learner(env_name,
                 max_time=200,
                 video_save_root=None,
                 **kwargs):
-    env = gym.make(env_name)
-    kwargs['actor_limit'] = env.action_space.high[0]
+    """
+    Run the reinforcement learning process (either can be in deterministic or training mode)
 
+    :param env_name: name of the environment to use for training
+    :param agent_class: class that can be used to create an agent object
+    :param max_episodes: number of episodes to use for training
+    :param n_deterministic_episodes: number of deterministic episodes to test the controller
+    :param output_freq: Frequency at which to output episode results
+    :param env_seed: random seed for the environment (to control the start conditions)
+    :param tf_seed: random seed for tensorflow (to control network initialization)
+    :param max_time: maximum number of time steps before terminating an episode
+    :param video_save_root: directory to specify video save location
+    :param kwargs: passed to the agent's __init__ method
+    :return: trained agent and data from run
+    """
+
+    # Create the OpaenAI gym environment
+    env = gym.make(env_name)
+
+    # Set up video saving directroy
     if video_save_root and not video_save_root.exists():
         video_save_root.mkdir()
 
-    # SEED EVERYTHING
+    # Implement random seeds
     if env_seed:
         env.seed(env_seed)
 
     if tf_seed:
-        tf.random.set_random_seed(tf_seed)
+        tf.compat.v1.random.set_random_seed(tf_seed)
 
+    # Find state and action sizes of the environment
     state_size = env.observation_space.shape[0]
     if not hasattr(env.action_space, 'n'):
         action_size = env.action_space.shape[0]
     else:
         action_size = env.action_space.n
 
-    agent = agent_class(state_size, action_size, **kwargs)
+    # Create agent
+    agent = agent_class(state_size, action_size,
+                        actor_limit=env.action_space.high[0],  # size of action (assumes all actions scaled the same)
+                        **kwargs)
 
-    # List of scores
+    # Initialize data lists for episodes
     return_info = dict(score_list=[],
                        deterministic_runs=[],
                        states=[],
@@ -60,52 +76,63 @@ def run_learner(env_name,
 
     # Iterate through episodes
     for episode in range(max_episodes + n_deterministic_episodes):
+
+        # Reset environment for beginning of episode
         state = env.reset()
 
+        # Determine if the action should be stochastic or not (only true during training)
         deterministic_action = episode >= max_episodes
 
+        # Sum of reward over an episode
         episode_rewards_sum = 0
 
-        video_recorder = None
-
+        # Episode data lists
         states = []
         rewards = []
         actions = []
         dones = []
 
+        # Set up video recorder if we want a video of this episode
+        video_recorder = None
         if deterministic_action and video_save_root:
             video_path = str(video_save_root / f'episode-{episode}.mp4')
             video_recorder = VideoRecorder(env, video_path, enabled=video_save_root is not None)
 
+        # Conduct episode
         done = False
         t = 0
         while not done:
 
+            # Show the frame and save the movie frame if this is in testing mode
             if deterministic_action:
                 env.render()
                 video_recorder.capture_frame()
 
-            # tf.random.set_random_seed(episode*231)
+            # Get action from agent
             action = agent.act(state, deterministic=deterministic_action)
 
+            # Get signals from environment
             new_state, reward, done, info = env.step(action)
 
+            # Save data
             states.append(state)
             actions.append(action)
             rewards.append(reward)
             dones.append(done)
+            episode_rewards_sum += reward
 
             # enforce maximum time for episode
             done = done or t == max_time - 1
 
-            episode_rewards_sum += reward
-
+            # Tell the agent a step in the environment has occured
             if not deterministic_action:
                 agent.on_t_update(state, action, new_state, reward, done)
 
+            # Update state value
             state = new_state
 
             if done:
+
                 # Output data
                 if episode % output_freq == 0 or deterministic_action:
                     print(f"episode: {episode}/{max_episodes},     "
@@ -119,35 +146,59 @@ def run_learner(env_name,
                     avg_reward = np.average(return_info['score_list'][-100:])
                     print(f"Average reward over 100 episodes: {avg_reward}")
 
-                # Train agent
                 if deterministic_action:
+                    # Save episode reward
                     return_info['deterministic_runs'].append(episode_rewards_sum)
+
+                    # Close the video recorder
                     video_recorder.close()
                     video_recorder.enabled = False
                 else:
+                    # Save episode reward
                     return_info['score_list'].append(episode_rewards_sum)
+
+                    # Inform the agent that an episode has completed
                     agent.on_episode_complete(episode)
 
+                # Update data lists
                 return_info['states'].append(states)
                 return_info['actions'].append(actions)
                 return_info['rewards'].append(rewards)
                 return_info['dones'].append(dones)
+
+            # Update time
             t += 1
 
-    # agent.save(agent.sess, global_step=max_episodes)
+    # Save the agent if training has occurred
+    if max_episodes > 0:
+        agent.save(agent.sess, global_step=max_episodes)
 
     return agent, return_info
 
 
 def train_agent(env_name, agent_class, restore_from_file=False, **kwargs):
+    """
+    Train an agent on the given environment
+
+    :param env_name: name of the environment to use for training
+    :param agent_class: class that can be used to create an agent object
+    :param restore_from_file: true if we want to restore a saved state of the agent
+    :param kwargs: passed to run_learner
+    :return:
+    """
+
+    # Construct save locations
     agent_save = Path('.save') / agent_class.__name__
     save_location = agent_save / env_name
-    # if not agent_save.exists():
-    #     agent_save.mkdir()
+
+    # Create directories if they don't already exist
+    if not agent_save.exists():
+        agent_save.mkdir()
 
     if not save_location.exists():
         save_location.mkdir()
 
+    # kwargs to specify file saving locations
     kwargs = dict(
         save_filename=save_location / 'network',
         video_save_root=save_location / 'animations',
@@ -155,9 +206,13 @@ def train_agent(env_name, agent_class, restore_from_file=False, **kwargs):
         **kwargs
     )
 
+    # Run the learner script
     agent, info = run_learner(env_name, agent_class, **kwargs)
 
+    # Save data in a pickle file (rewards, losses, etc)
     data_location = str(save_location / 'training_data')
+
+    # If we are restoring a saved model, we can load the saved data as well
     if restore_from_file:
         with open(data_location, 'rb') as fp:
             data = pickle.load(fp)
@@ -179,65 +234,54 @@ def train_agent(env_name, agent_class, restore_from_file=False, **kwargs):
 
     return agent, data
 
-    # https://github.com/openai/gym/wiki/Table-of-environments
 
-
-envs = [
-    # 'Pendulum-v0',
-    # 'BipedalWalker-v2',
-    # 'BipedalWalkerHardcore-v3',
-    # 'LunarLanderContinuous-v2',
+# Here are the available environments that can be trained for TD3 and DDPG. Futher information can
+# be found at: https://github.com/openai/gym/wiki/Table-of-environments
+envs_list = [
+    'Pendulum-v0',
+    'BipedalWalker-v2',
+    'BipedalWalkerHardcore-v3',
+    'LunarLanderContinuous-v2',
     'HalfCheetah-v2',
-    # 'Humanoid-v2',
-    # 'Hopper-v2',
-    # 'Walker2d-v2',
-    # 'Ant-v2',
-    # 'Reacher-v2',
-    # 'InvertedPendulum-v2',
-    # 'InvertedDoublePendulum-v2'
-]
-agents = [
-    Td3Agent,
-    # DdpgAgent
+    'Humanoid-v2',
+    'Hopper-v2',
+    'Walker2d-v2',
+    'Ant-v2',
+    'Reacher-v2',
+    'InvertedPendulum-v2',
+    'InvertedDoublePendulum-v2'
 ]
 
-options = list(itertools.product(envs, agents))
-config = options[task_id - 1]
-env_name = config[0]
-agent_class = config[1]
+if __name__ == '__main__':
 
-agent, data = train_agent(env_name,
-                          agent_class,
-                          max_time=500,
-                          # save_frequency=100,
-                          max_episodes=6000,
-                          # n_deterministic_episodes=0,
-                          # restore_from_file=False,
-                          # max_episodes=1,
-                          n_deterministic_episodes=1,
-                          restore_from_file=True,
-                          save_frequency=np.pi,
-                          # episode_number=6500,
-                          )
+    # Specify which environment to run
+    env_name = 'Hopper-v2'
 
-# N_rolling = 10
-#
-# plt.figure()
-# plt.plot(compute_rolling_average(data['scores'], N_rolling), c='r')
-# plt.xlabel('Episode Number')
-# plt.ylabel('Reward (Rolling Average)')
-# plt.title(f'{env_name} Trial Results')
-# # plt.hlines(195, x_vals[0], x_vals[-1], color='k')
-# plt.show(block=False)
+    # Specify which agent to use (TD3 or DDPG)
+    agent_class = Td3Agent
+    # agent_class = DdpgAgent
 
-# plt.figure()
-# plt.subplot(2, 1, 1)
-# plt.plot(compute_rolling_average(np.abs(data['actor_losses']), N_rolling), c='r')
-# plt.title('Actor Critic Loss Functions')
-# plt.ylabel('Actor Loss')
-#
-# plt.subplot(2, 1, 2)
-# plt.plot(compute_rolling_average(np.abs(data['critic_losses']), N_rolling), c='r')
-# plt.ylabel('Critic Loss')
-# plt.xlabel('Episode Number')
-# plt.show(block=False)
+    # True if we want to train, false if we want to load a saved model
+    train_mode = True
+
+    # For training
+    if train_mode:
+        agent, data = train_agent(env_name,
+                                  agent_class,
+                                  max_time=500,
+                                  save_frequency=100,
+                                  max_episodes=6000,
+                                  n_deterministic_episodes=0,
+                                  restore_from_file=False,
+                                  )
+
+    # For evaluation
+    else:
+        agent, data = train_agent(env_name,
+                                  agent_class,
+                                  max_time=500,
+                                  save_frequency=np.pi,  # A little hacky, but ensures it doesn't re-save the network
+                                  max_episodes=0,
+                                  n_deterministic_episodes=1,  # number of episodes to simulate and save
+                                  restore_from_file=True,
+                                  )

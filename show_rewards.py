@@ -1,14 +1,13 @@
-import gym
+"""
+Scripts for visualizing reward over time for trained networks
+"""
 import matplotlib.pyplot as plt
 from TD3 import Td3Agent
 from DDPG import DdpgAgent
 import numpy as np
-import tensorflow as tf
-from gym.wrappers.monitoring.video_recorder import VideoRecorder
 from pathlib import Path
 import pickle
-import sys
-import itertools
+
 
 def compute_rolling_average(scores, N):
     return np.convolve(scores, np.ones((N,)) / N, mode='valid')
@@ -21,6 +20,7 @@ def get_data(agent, env):
     with open(str(data_location), 'rb') as fp:
         training_data = pickle.load(fp)
     return training_data
+
 
 def show_for_basic_envs():
     envs = [
@@ -40,7 +40,7 @@ def show_for_basic_envs():
 
     n_roll = 300
 
-    fig, axs = plt.subplots(2, 2, figsize=(10,8))
+    fig, axs = plt.subplots(2, 2, figsize=(10, 8))
     for i, ax in enumerate(axs.flatten()):
         env = envs[i]
 
@@ -50,7 +50,7 @@ def show_for_basic_envs():
         ddpg_scores = ddpg_data['scores']
         td3_scores = td3_data['scores']
         ax.plot(compute_rolling_average(ddpg_scores, n_roll), c='tab:red', label='DDPG')
-        ax.plot(compute_rolling_average(td3_scores,  n_roll), c='tab:blue', label='TD3')
+        ax.plot(compute_rolling_average(td3_scores, n_roll), c='tab:blue', label='TD3')
         ax.set_title(env)
         ax.set_ylabel('Discounted Return')
         ax.set_xlabel('Training Epoch')

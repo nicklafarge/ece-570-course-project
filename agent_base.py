@@ -1,3 +1,8 @@
+"""
+Base class for defining agents (TD3 and DDPG extend this)
+Author: Nick LaFarge
+"""
+
 from abc import ABC, abstractmethod
 import tensorflow as tf
 import os
@@ -5,8 +10,18 @@ import numpy as np
 import logging
 
 class GymAgent(ABC):
+    """
+    Base class to extend for defining agents for use with OpenAI Gym environments
+    """
 
     def __init__(self, state_size, action_size, save_filename, nn_name='network', **kwargs):
+        """
+
+        :param state_size: Size of the state signal from the learning environment
+        :param action_size: Dimension of the environment action
+        :param save_filename: directory where to save the network (pathlib.Path object)
+        :param nn_name: Name of neural network for saving
+        """
         self.state_size = state_size
         self.action_size = action_size
         self.save_filename = save_filename
@@ -18,17 +33,46 @@ class GymAgent(ABC):
 
     @abstractmethod
     def act(self, state):
+        """
+        Defines how the agent selects an action based on an observed state form the environment.
+
+        :param state: Current environmental state (or observation)
+        :return: Action sampled from given agent
+        """
         pass
 
     @abstractmethod
     def on_t_update(self, old_state, action, new_state, reward, done):
+        """
+        Called every time an agent-environment interaction occurs
+
+        :param old_state: State prior to action
+        :param action: Action chosen by the actor network
+        :param new_state: New state produced by the environment as a result of the given action
+        :param reward: Reward given at the new state
+        :param done: True if the episode is complete
+        """
         pass
 
     @abstractmethod
     def on_episode_complete(self, episode_number):
+        """
+        Called every time an episode is complete
+
+        :param episode_number: The number episode that just completed
+        """
+
         pass
 
     def _setup_saver(self, sess, restore_from_file, saved_episode_number):
+        """
+        Set up the tensorflow saver, including the current episode number
+
+        :param sess: tensorflow session
+        :param restore_from_file: true if we want to load a saved network from a file
+        :param saved_episode_number: if restore_from_file is true, this allows for resuming a particular episode
+        :return: True if the networks was restored from a saved location
+        """
 
         # Setup variables for saving/resuming
         with tf.compat.v1.variable_scope('counter'):
@@ -45,18 +89,31 @@ class GymAgent(ABC):
         if restore_from_file:
             restore_successful = self.restore(sess, episode_number=saved_episode_number)
 
+        # If we did not restore a saved version, the initialize variables
         if not restore_successful:
             sess.run(tf.compat.v1.global_variables_initializer())
 
         return restore_successful
 
     def save(self, sess, global_step=0):
+        """
+        Save the tensorflow graph
+
+        :param sess: tensorflow session
+        :param global_step: number to identify this save (typically episode number)
+        """
         sess.run(self.update_episode_number,
                       feed_dict={self.episode_counter_ph: self.current_episode_number})
         filedir = str(self.save_filename / self.nn_name )
         self.saver.save(sess, filedir, global_step=global_step)
 
     def restore(self, sess, episode_number=False):
+        """
+        Restore a tensorflow graph
+
+        :param sess: tensorflow session
+        :param episode_number: episode number to load. If False, load the most recent episode
+        """
         if not self.save_filename.exists():
             return False
 
@@ -76,4 +133,5 @@ class GymAgent(ABC):
         new_saver.restore(sess, str(checkpoint_path))
 
         self.current_episode_number = episode_number
+
         return True

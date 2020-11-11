@@ -6,7 +6,7 @@ def get_vars(scope):
     Helper function to get all trainable variables within a specific scope
 
     :param scope: tensorflow scope
-    :return: trainable variables definedin scope
+    :return: trainable variables defined in scope
     """
     return [x for x in tf.compat.v1.global_variables() if scope in x.name]
 
@@ -14,7 +14,7 @@ def get_vars(scope):
 class ReplayBuffer:
     """
     This is almost identical to the original replay used in the SpinningUp implementation of TD3. See the top of
-    https://github.com/openai/spinningup/blob/master/spinup/algos/tf1/td3/td3.py for the original implementatio
+    https://github.com/openai/spinningup/blob/master/spinup/algos/tf1/td3/td3.py for the original implementation
     """
     def __init__(self, obs_dim, act_dim, size):
         self.state_buffer = np.zeros([size, obs_dim], dtype=np.float32)

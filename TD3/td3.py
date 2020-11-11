@@ -106,7 +106,7 @@ class Td3Agent(GymAgent):
         self.critic1_scope = 'critic1'
         self.critic2_scope = 'critic2'
 
-        # This was necessary for training with tensorflow1
+        # This was necessary for training with tensorflow2
         tf.compat.v1.disable_eager_execution()
 
         # Set up the tensorflow placeholders
@@ -318,8 +318,7 @@ class Td3Agent(GymAgent):
 
     def _define_actions(self):
         """
-        Define the stochastic and determinstic actions
-        :return:
+        Define the stochastic and deterministic actions
         """
 
         # Stochastic action for use during training
