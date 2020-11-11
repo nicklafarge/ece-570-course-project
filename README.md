@@ -3,31 +3,28 @@
 **Author**: Nick LaFarge
 
 
-## Experiment Instructions
+# 1. Experiment Instructions
 
 The code entry point is `runner.py`. At the bottom of this script, there are several options for how to configure the runner. This lets the user specify which agent (DDPG or TD3), and which OpenAI Gym environment. It also allows the user to sepcify whether or not we wish to train a new agent, or load a trained model for testing. These options can be located in the `if __name__ == '__main__':` section at the bottom of `runner.py`.
 
 Experiments were run using Python 3.8. The specific package versions are listed in `requirements.txt`. Some additional operating system-specific installation instructions may be required to run certain OpenAI gym environments (in particular MuJoCo environments require a license and local installation). The specific install steps are OS- specific, and well documented online.
 
-# Code Origins
+# 2. Code Origins
 
 TD3 and DDPG are reimplemented versions of the OpenAI Spinning UP baselines. The Spinning Up versions can be located at the following hyperlinks: [TD3](https://github.com/openai/spinningup/tree/master/spinup/algos/tf1/td3) and [DDPG](https://github.com/openai/spinningup/tree/master/spinup/algos/tf1/ddpg). The implementation here differs its from original Spinning Up source  in several notable ways. First, the original implementation defines the model, learning algorithm, and running script all in one place. In this paradigm, each new learning algorithm must re-implement the runner script (i.e. the basic script that keeps track of agent-environment interaction and stores relevant values). For increased flexibility, I chose to decouple these three parts into their own distinct sections of code.
 
-While the code organization and structure differs quite a bit from the SpinningUp source, the underlying algorithm remains the same and, hence, there are certain lines in common. Rather than give a line-by-line description of all of the included code, The sections below highlight the most important changes, as well as one method that I used directly from the SpinningUp source.
+While the code organization and structure differs quite a bit from the SpinningUp source, the underlying algorithm remains the same and, hence, there are certain lines in common. The directly used code, modified code, and original code portions are all summarized below.
+
+## Note on TD3 vs DDPG
+
+Note that TD3 and DDPG are very similar algorithms, and most of the code in the `TD3/` and `DDPG/` directories are duplicated. Given the similarities, I discuss all code below in the context of `TD3`, but note that the original/modified/unoriginal code discussions below for `TD3` *also apply to DDPG*. I chose to focus this discussion on the TD3 section because 1) that is the main method discussed in my project and 2) including both TD3 and DDPG below would just duplicate almost every category.
 
 
 
 
 
 
-
-
-
-
-
-
-
-## Code from other repositories
+## a) Code from other repositories
 
 No entire scripts have been used from the original repo. That said, certain lines of code and functions are caried over mostly unchanged, and are summarized as follows:
 
@@ -58,8 +55,9 @@ I used the SpinningUp implementations method for initializing and updating targe
 
 
 
-## Modified Code
+## b)  Modified Code
 
+The following pieces of code are modified from their original source in the SpinningUp repo.
 
 ### Tensorflow Networks
 I modified how the original implementation handles network creation. Below I describe my original code dealing with Actor and Critic model classes. Here is specifically refer to the tensorflow code to define the networks themselves. Network creation (`TD3/modles.py` Lines 65-68, 138-141) is modified from [SpinningUp td3/core.py](https://github.com/openai/spinningup/blob/master/spinup/algos/tf1/td3/core.py) ( Lines 12-14, 28-38).
@@ -68,7 +66,7 @@ I modified how the original implementation handles network creation. Below I des
 The SpinningUp implementation is based on tensorflow 1, and I added some modifications to allow the models to run using tensorflow 2.
 
 ### Optimization Step
-I made some modifications to the minibatch sampling (`TD3/td3.py` Lines 212-233). This is modified from [SpinningUp td3/td3.py](https://github.com/openai/spinningup/blob/master/spinup/algos/tf1/td3/td3.py) (Lines 273-288)
+I made some modifications to the minibatch sampling (`TD3/td3.py` Lines 212-233). This is modified from [SpinningUp td3/td3.py](https://github.com/openai/spinningup/blob/master/spinup/algos/tf1/td3/td3.py) (Lines 273-288). Furthermore, I made minor modifications to the loss function computations [SpinningUp td3/td3.py](https://github.com/openai/spinningup/blob/master/spinup/algos/tf1/td3/td3.py)  (Lines 189-196), as seen in my code `TD3/models.py` Lines 94-98, 167-168.
 
 ### Minor implementation Details
 
@@ -84,7 +82,7 @@ I made some modifications to the minibatch sampling (`TD3/td3.py` Lines 212-233)
 
 
 
-## Original Code
+## c) Original Code
 
 The original code files are summarized below.
 
@@ -99,10 +97,12 @@ I chose to implement my own runner scrip that is not based on the SpinningUp sou
 one important difference between the original and reimplemented versions are that training is now conducted based on episodes, whereas in the original source, the learning process entirely formulated around a running counter of agent-environment interactions, and episodes are not at the forefront of the runner script. Data storage methods are different as well (keeping track of reward, actions, states, etc). The SpinningUp version is definitely more powerful, but I tended to favor simplicity in this implementatino to make sure all parts of the code are easily understood.
 
 
-## Network saving and loading
+### Network Saving and Loading
 I cimplemented a different approach to saving/loading networks, and added the ability to load the network at a particular save point (to evaluate how learning occurs over time). This saving code can be found in `agent_base.py`.
 
 
+### Visualization Scripts
+The visualization portions are original. First, the reward plots over time in `show_rewards.py` are original. Next, I already discussed how the runner script is my own. As a part of that, the logic for creating and saving movies from individual epsidoes is not taken from the original source (though I do use OpenAI functions to facilitate that, I don't write my own low-level movie making scripts)
 
 
 
@@ -110,10 +110,20 @@ I cimplemented a different approach to saving/loading networks, and added the ab
 
 
 
-# Datasets
+# 3. Datasets
 Reinforcement Learning does not involved pre-computed datasets. However, learning environments provided by OpenAI are used. The OpenAI "Gym" contains numerous environments that are widely used in RL papers. Further information about Gym environments are is available as follows
 
 - [Home Page](https://gym.openai.com/)
 - [Env Details](https://github.com/openai/gym/wiki/Table-of-environments)
 
-Note that some environments require installing third-party software to function. In particular, the included code can be run onenvironments built off Box2D or MuJoCo engines. Installation instructions vary across platforms, and Mujoco requires a software license to function (free for students, and free 30 day trial available).
+Note that some environments require installing third-party software to function. In particular, the included code can be run onenvironments built off Box2D or MuJoCo engines. Installation instructions vary across platforms, and Mujoco requires a software license to function (free for students, and free 30 day trial available)
+
+The following specific environments are included in the documented
+
+- `Pendulum-v0`: Spin up and balance an inverted Pendulum
+- `BipedalWalker-v3`: Control a bipedal walker as it attempts to walk forward across uneven terrain
+- `BipedalWalkerHardcore-v3`: Samn as `BipedalWalker-v3`, but with obstacles included on the terrain (stairs, holes, etc.)
+- `LunarLanderContinuous-v2`: Smoothly and slowly land a 2D robot in a specified landing area (continuous control version)
+- `HalfCheetah-v2`: Learn how to move as a Cheetah-like robot (MuJoCo)
+
+Further documentation on these environments may be found at the above hyperlinks.
