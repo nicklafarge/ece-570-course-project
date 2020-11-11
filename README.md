@@ -32,10 +32,7 @@ No entire scripts have been used from the original repo. That said, certain line
 The ReplayBuffer implementation from SpinningUp is used almost directly in this project. This replay buffer class can be found in `DDPG/utils.py` and `TD3/utils.py`, and the original implementaiton is located at the top of [SpinningUp td3/td3.py](https://github.com/openai/spinningup/blob/master/spinup/algos/tf1/td3/td3.py).
 
 ### Tensorflow logistics
-Some tensorflow-specific code is caried over in various forms are sumamrized in the following list. I give the line numbers these refer to in the
-
-- Placeholder definition (`TD3/td3.py` )
-- Initializtion of target networks  (`TD3/td3.py` )
+Some tensorflow-specific code is caried over. In particualr, placeholder definition (`TD3/td3.py` Lines 284-289). Furthermore, I used SpinningUp's method for keeping track of which trainable variables belong to which network. They cleverly use tensorfows scopes to separate variables, and I use the same logic (though the organization is different so it appears in different places)
 
 
 ### Actor gradient computation
@@ -46,10 +43,8 @@ I implemented two methods to ensure that my implementation was correct (since ea
 
 
 
-## Target Network Updating
-I used the SpinningUp implementations method for initializing and updating target network values using polyak averaging. This is found in `TD3/td3.py` Lines 272-278, modified from [SpinningUp td3/td3.py](https://github.com/openai/spinningup/blob/master/spinup/algos/tf1/td3/td3.py) Lines 205-210.
-
-
+## Target Network
+I used the SpinningUp implementations method for initializing and updating target network values using polyak averaging. This is found in `TD3/td3.py` Lines 272-278, modified from [SpinningUp td3/td3.py](https://github.com/openai/spinningup/blob/master/spinup/algos/tf1/td3/td3.py) Lines 205-210. Furthermore, the target policy smoothing method is used (`TD3/td3.py` Lines 310-313, [SpinningUp td3/td3.py](https://github.com/openai/spinningup/blob/master/spinup/algos/tf1/td3/td3.py) Lines 173-176 )
 
 
 
