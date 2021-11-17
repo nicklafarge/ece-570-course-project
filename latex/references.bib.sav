@@ -1,0 +1,84 @@
+% Encoding: UTF-8
+
+@InProceedings{td3,
+  author    = {Scott Fujimoto and Herke van Hoof and David Meger},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  title     = {Addressing Function Approximation Error in Actor-Critic Methods},
+  year      = {2018},
+  url       = {https://arxiv.org/pdf/1802.09477.pdf},
+}
+
+@InProceedings{sac,
+  author    = {Tuomas Haarnoja and Aurick Zhou and Pieter Abbeel and Sergey Levine},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  title     = {Soft Actor-Critic: Off-Policy Maximum Entropy Deep ReinforcementLearning with a Stochastic Actor},
+  year      = {2018},
+  url       = {https://arxiv.org/pdf/1801.01290.pdf},
+}
+
+@InProceedings{ofir,
+  author    = {Nachum, Ofir and Gu, Shixiang (Shane) and Lee, Honglak and Levine, Sergey},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  title     = {Data-Efficient Hierarchical Reinforcement Learning},
+  year      = {2018},
+  pages     = {3303--3313},
+  volume    = {31},
+  url       = {https://proceedings.neurips.cc/paper/2018/file/e6384711491713d29bc63fc5eeb5ba4f-Paper.pdf},
+}
+
+@Book{textbook,
+  author        = {Richard S. Sutton and Andrew G. Barto},
+  publisher     = {The MIT Press},
+  title         = {Reinfrocement Learning: An Introduction},
+  year          = {2018},
+  edition       = {Second},
+  date-modified = {2019-06-01 17:46:16 -0500},
+}
+
+@Misc{ddpg,
+  author        = {Timothy P. Lillicrap and Jonathan J. Hunt and Alexander Pritzel and Nicolas Heess and Tom Erez and Yuval Tassa and David Silver and Daan Wierstra},
+  title         = {Continuous control with deep reinforcement learning},
+  year          = {2015},
+  archiveprefix = {arXiv},
+  eprint        = {1509.02971},
+  primaryclass  = {cs.LG},
+  url           = {https://arxiv.org/pdf/1509.02971.pdf},
+}
+
+@Article{dqn,
+  author        = {Mnih, Volodymyr and Kavukcuoglu, Koray and Silver, David and Rusu, Andrei A. and Veness, Joel and Bellemare, Marc G. and Graves, Alex and Riedmiller, Martin and Fidjeland, Andreas K. and Ostrovski, Georg and Petersen, Stig and Beattie, Charles and Sadik, Amir and Antonoglou, Ioannis and King, Helen and Kumaran, Dharshan and Wierstra, Daan and Legg, Shane and Hassabis, Demis},
+  journal       = {Nature},
+  title         = {Human-level control through deep reinforcement learning},
+  year          = {2015},
+  month         = {Feb},
+  volume        = {518},
+  date-modified = {2019-06-01 17:31:13 -0500},
+  day           = {25},
+  publisher     = {Nature Publishing Group, a division of Macmillan Publishers Limited. All Rights Reserved. SN -},
+  url           = {https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf},
+}
+
+@Article{ppo,
+  author  = {John Schulman and Filip Wolski and Prafulla Dhariwal and Alec Radford and Oleg Klimov},
+  journal = {CoRR},
+  title   = {Proximal Policy Optimization Algorithms},
+  year    = {2017},
+  volume  = {abs/1707.06347},
+  url     = {http://arxiv.org/abs/1707.06347},
+}
+
+@Article{SpinningUp2018,
+  author = {Achiam, Joshua},
+  title  = {{Spinning Up in Deep Reinforcement Learning}},
+  year   = {2018},
+  url    = {https://github.com/openai/spinningup},
+}
+
+@Misc{gym,
+  author = {Greg Brockman and Vicki Cheung and Ludwig Pettersson and Jonas Schneider and John Schulman and Jie Tang and Wojciech Zaremba},
+  title  = {OpenAI Gym},
+  year   = {2016},
+  eprint = {arXiv:1606.01540},
+}
+
+@Comment{jabref-meta: databaseType:bibtex;}

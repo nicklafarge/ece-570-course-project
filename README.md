@@ -9,6 +9,8 @@ The code entry point is `runner.py`. At the bottom of this script, there are sev
 
 Experiments were run using Python 3.8. The specific package versions are listed in `requirements.txt`. Some additional operating system-specific installation instructions may be required to run certain OpenAI gym environments (in particular MuJoCo environments require a license and local installation). The specific install steps are OS- specific, and well documented online.
 
+Note that code is included to load a saved network. I did not include any saved networks in hopes of keeping the zip filesize small, so a network would need to first be trained in order to use that functionality.
+
 # 2. Code Origins
 
 TD3 and DDPG are reimplemented versions of the OpenAI Spinning UP baselines. The Spinning Up versions can be located at the following hyperlinks: [TD3](https://github.com/openai/spinningup/tree/master/spinup/algos/tf1/td3) and [DDPG](https://github.com/openai/spinningup/tree/master/spinup/algos/tf1/ddpg). The implementation here differs its from original Spinning Up source  in several notable ways. First, the original implementation defines the model, learning algorithm, and running script all in one place. In this paradigm, each new learning algorithm must re-implement the runner script (i.e. the basic script that keeps track of agent-environment interaction and stores relevant values). For increased flexibility, I chose to decouple these three parts into their own distinct sections of code.

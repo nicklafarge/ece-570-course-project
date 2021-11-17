@@ -95,7 +95,7 @@ def run_learner(env_name,
         # Set up video recorder if we want a video of this episode
         video_recorder = None
         if deterministic_action and video_save_root:
-            video_path = str(video_save_root / f'episode-{episode}.mp4')
+            video_path = str(video_save_root / f'episode-{agent.current_episode_number}.mp4')
             video_recorder = VideoRecorder(env, video_path, enabled=video_save_root is not None)
 
         # Conduct episode
@@ -255,14 +255,17 @@ envs_list = [
 if __name__ == '__main__':
 
     # Specify which environment to run
-    env_name = 'Hopper-v2'
+    # env_name = 'LunarLanderContinuous-v2'
+    # env_name = 'BipedalWalker-v3'
+    # env_name = 'Pendulum-v0'
+    env_name = 'InvertedDoublePendulum-v2'
 
     # Specify which agent to use (TD3 or DDPG)
     agent_class = Td3Agent
     # agent_class = DdpgAgent
 
     # True if we want to train, false if we want to load a saved model
-    train_mode = True
+    train_mode = False
 
     # For training
     if train_mode:
@@ -279,9 +282,11 @@ if __name__ == '__main__':
     else:
         agent, data = train_agent(env_name,
                                   agent_class,
-                                  max_time=500,
+                                  max_time=1500,
                                   save_frequency=np.pi,  # A little hacky, but ensures it doesn't re-save the network
                                   max_episodes=0,
                                   n_deterministic_episodes=1,  # number of episodes to simulate and save
                                   restore_from_file=True,
+                                  # episode_number=1500,
+                                  # env_seed=4563,
                                   )
